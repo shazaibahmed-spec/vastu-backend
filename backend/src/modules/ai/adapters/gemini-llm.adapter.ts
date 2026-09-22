@@ -71,7 +71,7 @@ export class GeminiLlmAdapter implements LLMProvider {
     this.fallbackModel =
       this.configService.get<string>('ai.geminiFallbackModel') ||
       'gemini-3.5-flash-lite';
-    this.timeoutMs = 35000;
+    this.timeoutMs = 60000;
   }
 
   async generateExplanation(
@@ -137,8 +137,9 @@ remedyType must be one of "STRUCTURAL", "ELEMENTAL", "DECORATIVE", "COLOR".
 Return strictly valid JSON only.
 `;
 
+    const defaultModels = ['gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-2.5-flash'];
     const modelsToTry = Array.from(
-      new Set([this.model, this.fallbackModel].filter(Boolean)),
+      new Set([this.model, this.fallbackModel, ...defaultModels].filter(Boolean)),
     );
     let lastError: any = null;
 
@@ -166,6 +167,9 @@ Return strictly valid JSON only.
             generationConfig: {
               responseMimeType: 'application/json',
               temperature: 0.2,
+              ...(currentModel.includes('3.5-flash') && !currentModel.includes('lite')
+                ? { thinkingConfig: { thinkingBudget: 0 } }
+                : {}),
             },
           }),
           signal: controller.signal,

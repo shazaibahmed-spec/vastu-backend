@@ -30,7 +30,7 @@ export class GeminiVisionAdapter implements VisionProvider {
     this.fallbackModel =
       this.configService.get<string>('ai.geminiFallbackModel') ||
       'gemini-3.5-flash-lite';
-    this.timeoutMs = 45000;
+    this.timeoutMs = 60000;
   }
 
   async analyzeImage(input: VisionAnalysisInput): Promise<VisionAnalysisResult> {
@@ -72,8 +72,9 @@ export class GeminiVisionAdapter implements VisionProvider {
       input.calibratedDirection,
     );
 
+    const defaultModels = ['gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-2.5-flash'];
     const modelsToTry = Array.from(
-      new Set([this.model, this.fallbackModel].filter(Boolean)),
+      new Set([this.model, this.fallbackModel, ...defaultModels].filter(Boolean)),
     );
     let lastError: unknown = null;
     const startTime = Date.now();
@@ -110,6 +111,9 @@ export class GeminiVisionAdapter implements VisionProvider {
             generationConfig: {
               responseMimeType: 'application/json',
               temperature: 0.1,
+              ...(currentModel.includes('3.5-flash') && !currentModel.includes('lite')
+                ? { thinkingConfig: { thinkingBudget: 0 } }
+                : {}),
             },
           }),
           signal: controller.signal,
