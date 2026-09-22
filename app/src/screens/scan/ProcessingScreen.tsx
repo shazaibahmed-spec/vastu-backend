@@ -56,6 +56,7 @@ export const ProcessingScreen: React.FC<ProcessingScreenProps> = ({
   const { t, language } = useTranslation();
   const roomType = useScanStore((state) => state.roomType);
   const imageUri = useScanStore((state) => state.imageUri);
+  const imageBase64 = useScanStore((state) => state.imageBase64);
   const heading = useScanStore((state) => state.heading);
   const direction = useScanStore((state) => state.direction);
   const directionSource = useScanStore((state) => state.directionSource);
@@ -91,6 +92,7 @@ export const ProcessingScreen: React.FC<ProcessingScreenProps> = ({
       try {
         const report = await analysisApi.createAnalysis({
           imageUri: imageUri || undefined,
+          imageBase64: imageBase64 || undefined,
           roomType,
           directionSource,
           compassHeading: heading !== null ? heading : undefined,

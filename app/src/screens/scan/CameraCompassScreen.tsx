@@ -62,10 +62,11 @@ export const CameraCompassScreen: React.FC<CameraCompassScreenProps> = ({
         compressImageMaxWidth: 1024,
         compressImageMaxHeight: 1024,
         compressImageQuality: 0.75,
+        includeBase64: true,
       });
 
       if (image?.path) {
-        setCapturedImage(image.path);
+        setCapturedImage(image.path, image.data || undefined);
         setHeadingAndDirection(heading, direction, false);
         navigation.navigate('ReviewConfirm');
       }
@@ -86,10 +87,11 @@ export const CameraCompassScreen: React.FC<CameraCompassScreenProps> = ({
         compressImageMaxWidth: 1024,
         compressImageMaxHeight: 1024,
         compressImageQuality: 0.75,
+        includeBase64: true,
       });
 
       if (image?.path) {
-        setCapturedImage(image.path);
+        setCapturedImage(image.path, image.data || undefined);
         setHeadingAndDirection(heading, direction, true);
         navigation.navigate('ReviewConfirm');
       }

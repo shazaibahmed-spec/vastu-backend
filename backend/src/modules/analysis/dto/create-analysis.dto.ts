@@ -89,4 +89,13 @@ export class CreateAnalysisDto {
       'language must be one of: en, hi, ta, te, kn, ml, bn, gu, mr, pa',
   })
   language?: SupportedLanguageEnum;
+
+  @ApiPropertyOptional({
+    type: String,
+    description:
+      'Optional base64-encoded image string or data URI for reliable JSON uploads',
+  })
+  @IsOptional()
+  @IsString()
+  imageBase64?: string;
 }

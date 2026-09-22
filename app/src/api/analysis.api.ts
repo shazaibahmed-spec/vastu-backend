@@ -14,6 +14,7 @@ import {
 
 export interface CreateAnalysisPayload {
   imageUri?: string;
+  imageBase64?: string;
   roomType: RoomType;
   directionSource: DirectionSource;
   compassHeading?: number;
@@ -29,6 +30,46 @@ export const analysisApi = {
   createAnalysis: async (
     payload: CreateAnalysisPayload,
   ): Promise<AnalysisReport> => {
+    const token = await SecureStore.getItemAsync('vastu_access_token').catch(() => null);
+    const targetUrl = `${getBaseUrl()}/analysis`;
+
+    // 1. Preferred route: standard JSON with Base64 image
+    // Guarantees known Content-Length header, eliminating iOS BoringSSL
+    // bad record MAC errors and stream chunk fragmentation.
+    if (payload.imageBase64) {
+      console.log(`[Upload API] 🚀 POST ${targetUrl} (via JSON Base64)`);
+      const res = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          imageBase64: payload.imageBase64,
+          roomType: payload.roomType,
+          directionSource: payload.directionSource,
+          compassHeading: payload.compassHeading,
+          userSelectedDirection: payload.userSelectedDirection,
+          notes: payload.notes,
+          language: payload.language,
+        }),
+      });
+
+      const json = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        const msg =
+          (Array.isArray(json?.message) ? json.message.join(', ') : json?.message) ||
+          json?.error ||
+          `Server returned ${res.status}`;
+        throw new Error(msg);
+      }
+
+      return json.data;
+    }
+
+    // 2. Fallback route: multipart/form-data
     const formData = new FormData();
 
     if (payload.imageUri) {
@@ -71,9 +112,6 @@ export const analysisApi = {
       formData.append('language', payload.language);
     }
 
-    const token = await SecureStore.getItemAsync('vastu_access_token').catch(() => null);
-    const targetUrl = `${getBaseUrl()}/analysis`;
-
     const headers: Record<string, string> = {
       Accept: 'application/json',
     };
@@ -81,12 +119,8 @@ export const analysisApi = {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    console.log(`[Upload API] 🚀 POST ${targetUrl} (via native fetch)`);
+    console.log(`[Upload API] 🚀 POST ${targetUrl} (via native fetch multipart)`);
 
-    // Use native fetch instead of Axios for multipart upload on iOS:
-    // Axios uses XMLHttpRequest + piped NSInputStream which causes BoringSSL
-    // to trip "SSLV3_ALERT_BAD_RECORD_MAC" (alert 20) on iOS during HTTP/2 upload.
-    // Native fetch uses NSURLSessionUploadTask which streams directly and reliably.
     const res = await fetch(targetUrl, {
       method: 'POST',
       headers,

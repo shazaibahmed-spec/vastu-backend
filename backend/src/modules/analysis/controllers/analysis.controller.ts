@@ -122,6 +122,13 @@ export class AnalysisController {
     if (file && file.buffer) {
       imageBuffer = file.buffer;
       filename = file.originalname || 'room-capture.jpg';
+    } else if (dto.imageBase64) {
+      const cleanBase64 = dto.imageBase64.replace(
+        /^data:image\/\w+;base64,/,
+        '',
+      );
+      imageBuffer = Buffer.from(cleanBase64, 'base64');
+      filename = 'room-capture.jpg';
     } else {
       // Create a valid synthetic JPEG image buffer for headless JSON testing
       imageBuffer = await sharp({

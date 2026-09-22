@@ -4,6 +4,7 @@ import { AnalysisReport, CompassDirection, DirectionSource, RoomType } from '../
 interface ScanState {
   roomType: RoomType;
   imageUri: string | null;
+  imageBase64: string | null;
   heading: number | null;
   direction: CompassDirection | null;
   directionSource: DirectionSource;
@@ -12,7 +13,7 @@ interface ScanState {
   currentReport: AnalysisReport | null;
 
   setRoomType: (roomType: RoomType) => void;
-  setCapturedImage: (uri: string) => void;
+  setCapturedImage: (uri: string, base64?: string) => void;
   setHeadingAndDirection: (
     heading: number,
     direction: CompassDirection,
@@ -26,6 +27,7 @@ interface ScanState {
 export const useScanStore = create<ScanState>((set) => ({
   roomType: 'BEDROOM',
   imageUri: null,
+  imageBase64: null,
   heading: 180,
   direction: 'SOUTH',
   directionSource: 'DEVICE_COMPASS',
@@ -34,7 +36,8 @@ export const useScanStore = create<ScanState>((set) => ({
   currentReport: null,
 
   setRoomType: (roomType) => set({ roomType }),
-  setCapturedImage: (imageUri) => set({ imageUri }),
+  setCapturedImage: (imageUri, imageBase64) =>
+    set({ imageUri, imageBase64: imageBase64 || null }),
   setHeadingAndDirection: (heading, direction, isManual = false) =>
     set({
       heading,
@@ -48,6 +51,7 @@ export const useScanStore = create<ScanState>((set) => ({
     set({
       roomType: 'BEDROOM',
       imageUri: null,
+      imageBase64: null,
       heading: 180,
       direction: 'SOUTH',
       directionSource: 'DEVICE_COMPASS',
