@@ -59,7 +59,9 @@ export const CameraCompassScreen: React.FC<CameraCompassScreenProps> = ({
       const image = await ImagePicker.openCamera({
         mediaType: 'photo',
         cropping: false,
-        compressImageQuality: 0.8,
+        compressImageMaxWidth: 1024,
+        compressImageMaxHeight: 1024,
+        compressImageQuality: 0.75,
       });
 
       if (image?.path) {
@@ -81,7 +83,9 @@ export const CameraCompassScreen: React.FC<CameraCompassScreenProps> = ({
       const image = await ImagePicker.openPicker({
         mediaType: 'photo',
         cropping: false,
-        compressImageQuality: 0.8,
+        compressImageMaxWidth: 1024,
+        compressImageMaxHeight: 1024,
+        compressImageQuality: 0.75,
       });
 
       if (image?.path) {

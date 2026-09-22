@@ -1,5 +1,7 @@
 import { Platform } from 'react-native';
 import { apiClient } from './client';
+import { getBaseUrl } from './config';
+import { storage as SecureStore } from './storage';
 import {
   AnalysisReport,
   AnalysisSummaryCard,
@@ -69,23 +71,39 @@ export const analysisApi = {
       formData.append('language', payload.language);
     }
 
-    // NOTE: DO NOT set 'Content-Type': 'multipart/form-data' header.
-    // Setting it manually strips the boundary parameter in React Native / Axios,
-    // which causes Cloudflare / Render TLS streams to abruptly terminate with:
-    // "A TLS error caused the secure connection to fail."
-    const response = await apiClient.post<ApiResponse<AnalysisReport>>(
-      '/analysis',
-      formData,
-      {
-        headers: {
-          Accept: 'application/json',
-        },
-        transformRequest: (data) => data,
-        timeout: 120000,
-      },
-    );
+    const token = await SecureStore.getItemAsync('vastu_access_token').catch(() => null);
+    const targetUrl = `${getBaseUrl()}/analysis`;
 
-    return response.data.data;
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    console.log(`[Upload API] 🚀 POST ${targetUrl} (via native fetch)`);
+
+    // Use native fetch instead of Axios for multipart upload on iOS:
+    // Axios uses XMLHttpRequest + piped NSInputStream which causes BoringSSL
+    // to trip "SSLV3_ALERT_BAD_RECORD_MAC" (alert 20) on iOS during HTTP/2 upload.
+    // Native fetch uses NSURLSessionUploadTask which streams directly and reliably.
+    const res = await fetch(targetUrl, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    const json = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      const msg =
+        (Array.isArray(json?.message) ? json.message.join(', ') : json?.message) ||
+        json?.error ||
+        `Server returned ${res.status}`;
+      throw new Error(msg);
+    }
+
+    return json.data;
   },
 
   /**
