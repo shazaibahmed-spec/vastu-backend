@@ -18,7 +18,13 @@ const getDevServerHost = (): string => {
   return '192.168.1.32';
 };
 
+// Production Cloud Backend URL (Render + Supabase)
+const PRODUCTION_URL = 'https://vastu-backend-udcy.onrender.com/api/v1';
+
 const getDefaultHost = (): string => {
+  if (PRODUCTION_URL) {
+    return PRODUCTION_URL;
+  }
   const host = getDevServerHost();
   return `http://${host}:3001/api/v1`;
 };
