@@ -2,6 +2,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { json, urlencoded } from 'express';
 import helmet from 'helmet';
 import { AppModule } from './app.module.js';
 import { GlobalHttpExceptionFilter } from './common/filters/http-exception.filter.js';
@@ -19,6 +20,10 @@ async function bootstrap() {
     'http://localhost:3000',
     'http://localhost:3001',
   ];
+
+  // Increase JSON and URL-encoded body limit for Base64 image uploads
+  app.use(json({ limit: '20mb' }));
+  app.use(urlencoded({ extended: true, limit: '20mb' }));
 
   // Security Headers (CSP disabled to allow Swagger UI scripts & assets)
   app.use(
