@@ -37,6 +37,9 @@ COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/clie
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/dist ./dist
 
+# Ensure uploads directory exists and is owned by non-root node user
+RUN mkdir -p /app/uploads && chown -R node:node /app
+
 # Non-root security user
 USER node
 
