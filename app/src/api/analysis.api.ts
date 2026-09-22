@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { apiClient } from './client';
 import {
   AnalysisReport,
@@ -29,14 +30,21 @@ export const analysisApi = {
     const formData = new FormData();
 
     if (payload.imageUri) {
-      const filename = payload.imageUri.split('/').pop() || 'room-capture.jpg';
+      const rawUri = payload.imageUri;
+      const filename = rawUri.split('/').pop() || 'room-capture.jpg';
       const match = /\.(\w+)$/.exec(filename);
       const ext = match?.[1]?.toLowerCase() || 'jpg';
-      const mimeType = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+      const mimeType =
+        ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
 
-      // React Native multipart file convention
+      // iOS requires file:// URI scheme for native RCTNetworking file stream
+      const fileUri =
+        Platform.OS === 'ios' && !rawUri.startsWith('file://')
+          ? `file://${rawUri}`
+          : rawUri;
+
       formData.append('image', {
-        uri: payload.imageUri,
+        uri: fileUri,
         name: filename,
         type: mimeType,
       } as any);
@@ -61,13 +69,18 @@ export const analysisApi = {
       formData.append('language', payload.language);
     }
 
+    // NOTE: DO NOT set 'Content-Type': 'multipart/form-data' header.
+    // Setting it manually strips the boundary parameter in React Native / Axios,
+    // which causes Cloudflare / Render TLS streams to abruptly terminate with:
+    // "A TLS error caused the secure connection to fail."
     const response = await apiClient.post<ApiResponse<AnalysisReport>>(
       '/analysis',
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          Accept: 'application/json',
         },
+        transformRequest: (data) => data,
         timeout: 120000,
       },
     );
