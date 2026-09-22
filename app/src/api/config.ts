@@ -31,7 +31,7 @@ const getDefaultHost = (): string => {
 
 export const API_CONFIG = {
   baseUrl: getDefaultHost(),
-  timeoutMs: 60000,
+  timeoutMs: 120000,
 };
 
 export let currentBaseUrl = API_CONFIG.baseUrl;

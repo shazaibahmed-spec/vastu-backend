@@ -96,7 +96,7 @@ function sanitizeForLog(data: any, depth = 0): any {
 }
 
 export const apiClient = axios.create({
-  timeout: 60000,
+  timeout: 120000,
 });
 
 // Request interceptor: Dynamic Base URL, Token attachment & Console Logging
