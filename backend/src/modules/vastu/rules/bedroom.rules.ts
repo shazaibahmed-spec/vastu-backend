@@ -1,0 +1,353 @@
+import {
+  DirectionEnum,
+  RemedyTypeEnum,
+  RoomTypeEnum,
+  SeverityEnum,
+  VerdictEnum,
+} from '../../../common/constants/index.js';
+import { VastuRuleDefinition } from '../types/vastu-rule.interface.js';
+
+export const BEDROOM_RULES: ReadonlyArray<VastuRuleDefinition> = [
+  {
+    code: 'BED-001-POS-SW',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'PLACEMENT',
+    name: 'Bed in South-West / South Stability Zone',
+    description:
+      'Bed is situated in the South-West or South stability quadrant, anchoring restorative sleep and relationship harmony.',
+    targetObject: 'bed',
+    condition: {
+      field: 'zone',
+      op: 'IN',
+      value: [DirectionEnum.SOUTH_WEST, DirectionEnum.SOUTH, DirectionEnum.WEST],
+    },
+    severity: SeverityEnum.LOW,
+    verdictOnMatch: VerdictEnum.COMPLIANT,
+    scoreImpact: 10,
+    defaultRemedy: 'Maintain current placement; keep the zone heavy and stable.',
+    remedyType: RemedyTypeEnum.DECORATIVE,
+    isActive: true,
+  },
+  {
+    code: 'BED-002-POS-NE-DEFECT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'PLACEMENT',
+    name: 'Bed in North-East (Ishanya Defect)',
+    description:
+      'The bed is located in the sacred North-East (Ishanya) zone. Sleeping in this light spiritual zone can cause restless mental activity and health depletion.',
+    targetObject: 'bed',
+    condition: {
+      field: 'zone',
+      op: 'EQUALS',
+      value: DirectionEnum.NORTH_EAST,
+    },
+    severity: SeverityEnum.CRITICAL,
+    verdictOnMatch: VerdictEnum.DEFECT,
+    scoreImpact: -25,
+    defaultRemedy:
+      'Relocate bed to the South or South-West wall. If immovable, raise bed on a solid wooden platform and place a brass helix in the corner.',
+    remedyType: RemedyTypeEnum.STRUCTURAL,
+    isActive: true,
+  },
+  {
+    code: 'BED-003-HEAD-NORTH-DEFECT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'ORIENTATION',
+    name: 'Sleeping Head Facing North',
+    description:
+      'Sleeping with head towards the North aligns human bio-magnetic field with Earth magnetic pole, inducing vascular pressure and insomnia.',
+    targetObject: 'bed',
+    condition: {
+      field: 'attributes.headboardDirection',
+      op: 'EQUALS',
+      value: DirectionEnum.NORTH,
+    },
+    severity: SeverityEnum.CRITICAL,
+    verdictOnMatch: VerdictEnum.DEFECT,
+    scoreImpact: -25,
+    defaultRemedy:
+      'Immediately reorient pillows/headboard towards the South or East to align with natural magnetic flow.',
+    remedyType: RemedyTypeEnum.DECORATIVE,
+    isActive: true,
+  },
+  {
+    code: 'BED-004-HEAD-SOUTH-COMPLIANT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'ORIENTATION',
+    name: 'Sleeping Head Facing South',
+    description:
+      'Headboard oriented towards the South draws peaceful electromagnetic alignment, providing deep, revitalizing rest.',
+    targetObject: 'bed',
+    condition: {
+      field: 'attributes.headboardDirection',
+      op: 'EQUALS',
+      value: DirectionEnum.SOUTH,
+    },
+    severity: SeverityEnum.LOW,
+    verdictOnMatch: VerdictEnum.COMPLIANT,
+    scoreImpact: 10,
+    defaultRemedy: 'Favorable orientation. Maintain current arrangement.',
+    remedyType: RemedyTypeEnum.DECORATIVE,
+    isActive: true,
+  },
+  {
+    code: 'BED-005-MIRROR-BED-REFLECTION',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'OBSTRUCTION',
+    name: 'Mirror Reflecting Sleeping Body',
+    description:
+      'The dressing mirror directly reflects the bed, reflecting personal energy during sleep and promoting mental fatigue.',
+    targetObject: 'mirror',
+    condition: {
+      field: 'attributes.reflectsBed',
+      op: 'EQUALS',
+      value: true,
+    },
+    severity: SeverityEnum.HIGH,
+    verdictOnMatch: VerdictEnum.DEFECT,
+    scoreImpact: -15,
+    defaultRemedy:
+      'Cover mirror with an opaque fabric during sleep hours or reposition away from the bed line of sight.',
+    remedyType: RemedyTypeEnum.DECORATIVE,
+    isActive: true,
+  },
+  {
+    code: 'BED-006-BEAM-OVERHEAD',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'OBSTRUCTION',
+    name: 'Bed Directly Beneath Ceiling Beam',
+    description:
+      'Bed is aligned directly below an exposed structural ceiling beam, creating continuous downward compressive pressure.',
+    targetObject: 'bed',
+    condition: {
+      field: 'attributes.underCeilingBeam',
+      op: 'EQUALS',
+      value: true,
+    },
+    severity: SeverityEnum.HIGH,
+    verdictOnMatch: VerdictEnum.DEFECT,
+    scoreImpact: -15,
+    defaultRemedy:
+      'Shift bed away from the beam axis or enclose the beam within a false ceiling or decorative canopy.',
+    remedyType: RemedyTypeEnum.STRUCTURAL,
+    isActive: true,
+  },
+  {
+    code: 'BED-007-POS-CENTER-DEFECT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'PLACEMENT',
+    name: 'Bed in Room Center (Brahmasthan Defect)',
+    description:
+      'The bed is situated in the central zone (Brahmasthan) of the room. Placing heavy furniture in the cosmic core congests spatial prana, creating mental restlessness and lack of energetic grounding.',
+    targetObject: 'bed',
+    condition: {
+      field: 'zone',
+      op: 'EQUALS',
+      value: DirectionEnum.CENTER,
+    },
+    severity: SeverityEnum.HIGH,
+    verdictOnMatch: VerdictEnum.DEFECT,
+    scoreImpact: -25,
+    defaultRemedy:
+      'Relocate the bed against the South, South-West, or West wall to restore stability and leave the central Brahmasthan open and clear.',
+    remedyType: RemedyTypeEnum.STRUCTURAL,
+    isActive: true,
+  },
+  {
+    code: 'BED-008-HEAD-EAST-COMPLIANT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'ORIENTATION',
+    name: 'Sleeping Head Facing East',
+    description:
+      'Headboard oriented towards the East aligns with solar energy and positive geomagnetic flow, enhancing mental clarity, memory, and cognitive vitality.',
+    targetObject: 'bed',
+    condition: {
+      field: 'attributes.headboardDirection',
+      op: 'EQUALS',
+      value: DirectionEnum.EAST,
+    },
+    severity: SeverityEnum.LOW,
+    verdictOnMatch: VerdictEnum.COMPLIANT,
+    scoreImpact: 10,
+    defaultRemedy: 'Highly auspicious headboard orientation. Maintain this arrangement.',
+    remedyType: RemedyTypeEnum.DECORATIVE,
+    isActive: true,
+  },
+  {
+    code: 'BED-009-POS-SE-DEFECT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'PLACEMENT',
+    name: 'Bed in South-East (Agni Fire Quadrant Defect)',
+    description:
+      'The bed is located in the South-East (Agneya) fire quadrant. Sleeping in this high-energy fire sector induces restlessness, temper volatility, and disturbed sleep cycles.',
+    targetObject: 'bed',
+    condition: {
+      field: 'zone',
+      op: 'EQUALS',
+      value: DirectionEnum.SOUTH_EAST,
+    },
+    severity: SeverityEnum.HIGH,
+    verdictOnMatch: VerdictEnum.DEFECT,
+    scoreImpact: -20,
+    defaultRemedy:
+      'Shift the bed to the South-West or South quadrant. If moving is constrained, use soothing pastel or cream bedding and keep fire elements away.',
+    remedyType: RemedyTypeEnum.ELEMENTAL,
+    isActive: true,
+  },
+  {
+    code: 'BED-010-POS-NORTH-DEFECT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'PLACEMENT',
+    name: 'Bed in North Zone Defect',
+    description:
+      'The bed is situated along the North wall. Placing heavy master bedroom furniture in this light, magnetic water quadrant suppresses financial energy and calm.',
+    targetObject: 'bed',
+    condition: {
+      field: 'zone',
+      op: 'EQUALS',
+      value: DirectionEnum.NORTH,
+    },
+    severity: SeverityEnum.MEDIUM,
+    verdictOnMatch: VerdictEnum.DEFECT,
+    scoreImpact: -15,
+    defaultRemedy:
+      'Move bed towards the South-West or West wall to maintain open, light energy in the North.',
+    remedyType: RemedyTypeEnum.STRUCTURAL,
+    isActive: true,
+  },
+  {
+    code: 'BED-011-POS-EAST-COMPLIANT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'PLACEMENT',
+    name: 'Bed Positioned in East Quadrant',
+    description:
+      'Bed is positioned along the East solar quadrant, conducive to intellectual focus and positive morning vitality.',
+    targetObject: 'bed',
+    condition: {
+      field: 'zone',
+      op: 'EQUALS',
+      value: DirectionEnum.EAST,
+    },
+    severity: SeverityEnum.LOW,
+    verdictOnMatch: VerdictEnum.COMPLIANT,
+    scoreImpact: 5,
+    defaultRemedy: 'Acceptable placement. Keep headboard facing South or East.',
+    remedyType: RemedyTypeEnum.DECORATIVE,
+    isActive: true,
+  },
+  {
+    code: 'BED-012-POS-NW-COMPLIANT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'PLACEMENT',
+    name: 'Bed in North-West (Vayu Zone for Guests / Movement)',
+    description:
+      'Bed located in the North-West (Vayu) sector. Auspicious and classical for guest bedrooms, children, or unmarried relatives, promoting active vitality.',
+    targetObject: 'bed',
+    condition: {
+      field: 'zone',
+      op: 'EQUALS',
+      value: DirectionEnum.NORTH_WEST,
+    },
+    severity: SeverityEnum.LOW,
+    verdictOnMatch: VerdictEnum.COMPLIANT,
+    scoreImpact: 10,
+    defaultRemedy:
+      'Acceptable bed position. Ensure sleeping headboard is directed towards the South or East.',
+    remedyType: RemedyTypeEnum.DECORATIVE,
+    isActive: true,
+  },
+  {
+    code: 'BED-013-WARDROBE-SW-COMPLIANT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'PLACEMENT',
+    name: 'Heavy Wardrobe Grounded in South-West Stability Zone',
+    description:
+      'Heavy storage, wardrobe, or almirah placed against South or West walls. Anchors physical weight in the earth zone, stabilizing family wealth.',
+    targetObject: 'wardrobe',
+    condition: {
+      field: 'zone',
+      op: 'IN',
+      value: [DirectionEnum.SOUTH_WEST, DirectionEnum.SOUTH, DirectionEnum.WEST],
+    },
+    severity: SeverityEnum.LOW,
+    verdictOnMatch: VerdictEnum.COMPLIANT,
+    scoreImpact: 10,
+    defaultRemedy:
+      'Ideal placement for heavy bedroom storage. Keep shelves organized and tidy.',
+    remedyType: RemedyTypeEnum.DECORATIVE,
+    isActive: true,
+  },
+  {
+    code: 'BED-014-WARDROBE-NE-DEFECT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'PLACEMENT',
+    name: 'Bulky Wardrobe in North-East (Ishanya Congestion)',
+    description:
+      'Heavy wardrobe or tall storage cupboard situated in the North-East corner. Heavy objects here suppress divine morning solar energy and mental calm.',
+    targetObject: 'wardrobe',
+    condition: {
+      field: 'zone',
+      op: 'IN',
+      value: [DirectionEnum.NORTH_EAST, DirectionEnum.NORTH],
+    },
+    severity: SeverityEnum.HIGH,
+    verdictOnMatch: VerdictEnum.DEFECT,
+    scoreImpact: -15,
+    defaultRemedy:
+      'Shift heavy wardrobe to the South or South-West wall. If immovable, keep cabinet doors light in color and interior clutter-free.',
+    remedyType: RemedyTypeEnum.STRUCTURAL,
+    isActive: true,
+  },
+  {
+    code: 'BED-015-MIRROR-NE-COMPLIANT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'PLACEMENT',
+    name: 'Dressing Mirror on North or East Wall',
+    description:
+      'Mirror or vanity positioned on the North or East wall, expanding positive solar and magnetic currents in the bedroom.',
+    targetObject: 'mirror',
+    condition: {
+      op: 'AND',
+      conditions: [
+        {
+          field: 'zone',
+          op: 'IN',
+          value: [DirectionEnum.NORTH, DirectionEnum.EAST, DirectionEnum.NORTH_EAST],
+        },
+        {
+          field: 'attributes.reflectsBed',
+          op: 'NOT_EQUALS',
+          value: true,
+        },
+      ],
+    },
+    severity: SeverityEnum.LOW,
+    verdictOnMatch: VerdictEnum.COMPLIANT,
+    scoreImpact: 10,
+    defaultRemedy:
+      'Favorable mirror wall. Ensure it does not directly reflect the sleeping bed.',
+    remedyType: RemedyTypeEnum.DECORATIVE,
+    isActive: true,
+  },
+  {
+    code: 'BED-016-MIRROR-SW-DEFECT',
+    roomType: RoomTypeEnum.BEDROOM,
+    category: 'PLACEMENT',
+    name: 'Dressing Mirror on South or South-West Wall',
+    description:
+      'Mirror placed on the South or South-West wall. Reflecting the heavy grounding sector can induce emotional restlessness.',
+    targetObject: 'mirror',
+    condition: {
+      field: 'zone',
+      op: 'IN',
+      value: [DirectionEnum.SOUTH, DirectionEnum.SOUTH_WEST],
+    },
+    severity: SeverityEnum.MEDIUM,
+    verdictOnMatch: VerdictEnum.DEFECT,
+    scoreImpact: -10,
+    defaultRemedy:
+      'Move mirror to the North or East wall, or cover it with a decorative drape when sleeping.',
+    remedyType: RemedyTypeEnum.DECORATIVE,
+    isActive: true,
+  },
+];

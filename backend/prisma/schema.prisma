@@ -1,0 +1,263 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum RoomType {
+  BEDROOM
+  LIVING_ROOM
+  KITCHEN
+  MAIN_ENTRANCE
+  OFFICE
+}
+
+enum Direction {
+  NORTH
+  NORTH_EAST
+  EAST
+  SOUTH_EAST
+  SOUTH
+  SOUTH_WEST
+  WEST
+  NORTH_WEST
+  CENTER
+}
+
+enum DirectionSource {
+  DEVICE_COMPASS
+  USER_SELECTED
+  UNKNOWN
+}
+
+enum AnalysisStatus {
+  PENDING
+  IMAGE_UPLOADED
+  AI_ANALYSIS
+  OBJECT_DETECTION
+  RULE_EVALUATION
+  REPORT_GENERATION
+  COMPLETED
+  FAILED_AI_ANALYSIS
+  FAILED_RULE_EVALUATION
+  FAILED_REPORT_GENERATION
+  FAILED_INVALID_INPUT
+}
+
+enum Verdict {
+  COMPLIANT
+  DEFECT
+  NEUTRAL
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum RemedyType {
+  STRUCTURAL
+  ELEMENTAL
+  DECORATIVE
+  COLOR
+}
+
+model User {
+  id           String     @id @default(uuid()) @db.Uuid
+  email        String     @unique @db.VarChar(255)
+  passwordHash String     @map("password_hash") @db.VarChar(255)
+  name         String?    @db.VarChar(100)
+  languageCode String     @default("en") @map("language_code") @db.VarChar(10)
+  role         Role       @default(USER)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  deletedAt    DateTime?  @map("deleted_at")
+
+  analyses     Analysis[]
+
+  @@map("users")
+}
+
+model VastuRuleVersion {
+  id            String      @id @default(uuid()) @db.Uuid
+  versionNumber String      @unique @map("version_number") @db.VarChar(20)
+  releaseNotes  String?     @map("release_notes") @db.Text
+  isCurrent     Boolean     @default(false) @map("is_current")
+  publishedAt   DateTime    @default(now()) @map("published_at")
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  rules         VastuRule[]
+  analyses      Analysis[]
+
+  @@map("vastu_rule_versions")
+}
+
+model VastuRule {
+  id              String            @id @default(uuid()) @db.Uuid
+  versionId       String            @map("version_id") @db.Uuid
+  code            String            @db.VarChar(50)
+  roomType        RoomType          @map("room_type")
+  category        String            @db.VarChar(50)
+  name            String            @db.VarChar(150)
+  description     String            @db.Text
+  targetObject    String            @map("target_object") @db.VarChar(50)
+  conditionJson   Json              @map("condition_json")
+  severity        Severity          @default(MEDIUM)
+  verdictOnMatch  Verdict           @default(DEFECT) @map("verdict_on_match")
+  defaultRemedy   String            @map("default_remedy") @db.Text
+  isActive        Boolean           @default(true) @map("is_active")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  version         VastuRuleVersion  @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  findings        AnalysisFinding[]
+
+  @@unique([code, versionId])
+  @@index([roomType, isActive])
+  @@map("vastu_rules")
+}
+
+model Analysis {
+  id                 String            @id @default(uuid()) @db.Uuid
+  userId             String            @map("user_id") @db.Uuid
+  ruleVersionId      String            @map("rule_version_id") @db.Uuid
+  roomType           RoomType          @map("room_type")
+  status             AnalysisStatus    @default(PENDING)
+  compassHeading     Float?            @map("compass_heading")
+  directionSource    DirectionSource   @default(UNKNOWN) @map("direction_source")
+  confirmedDirection Direction?        @map("confirmed_direction")
+  overallScore       Int?              @map("overall_score")
+  languageCode       String            @default("en") @map("language_code") @db.VarChar(10)
+  promptVersion       String?           @map("prompt_version") @db.VarChar(20)
+  modelVersion        String?           @map("model_version") @db.VarChar(50)
+  visionModelUsed     String?           @map("vision_model_used") @db.VarChar(50)
+  visionPromptVersion String?           @map("vision_prompt_version") @db.VarChar(20)
+  visionDurationMs    Int?              @map("vision_duration_ms")
+  imageQualityScore   Float?            @map("image_quality_score")
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+  deletedAt           DateTime?         @map("deleted_at")
+
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ruleVersion        VastuRuleVersion  @relation(fields: [ruleVersionId], references: [id])
+  image              AnalysisImage?
+  input              AnalysisInput?
+  detectedObjects    DetectedObject[]
+  findings           AnalysisFinding[]
+  report             AnalysisReport?
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status])
+  @@map("analyses")
+}
+
+model AnalysisImage {
+  id               String    @id @default(uuid()) @db.Uuid
+  analysisId       String    @unique @map("analysis_id") @db.Uuid
+  storageKey       String    @map("storage_key") @db.VarChar(255)
+  originalFilename String    @map("original_filename") @db.VarChar(255)
+  mimeType         String    @map("mime_type") @db.VarChar(50)
+  sizeBytes        Int       @map("size_bytes")
+  width            Int?
+  height           Int?
+  sha256Hash       String    @map("sha256_hash") @db.VarChar(64)
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  analysis         Analysis  @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([sha256Hash])
+  @@map("analysis_images")
+}
+
+model AnalysisInput {
+  id                    String            @id @default(uuid()) @db.Uuid
+  analysisId            String            @unique @map("analysis_id") @db.Uuid
+  rawCompassHeading     Float?            @map("raw_compass_heading")
+  userSelectedDirection Direction?        @map("user_selected_direction")
+  roomType              RoomType          @map("room_type")
+  metadataJson          Json?             @map("metadata_json")
+  createdAt             DateTime          @default(now()) @map("created_at")
+
+  analysis              Analysis          @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@map("analysis_inputs")
+}
+
+model DetectedObject {
+  id               String            @id @default(uuid()) @db.Uuid
+  analysisId       String            @map("analysis_id") @db.Uuid
+  objectType       String            @map("object_type") @db.VarChar(50)
+  label            String            @db.VarChar(100)
+  zone             Direction
+  relativePosition Json              @map("relative_position")
+  confidence       Float
+  boundingBox      Json?             @map("bounding_box")
+  detectionStatus  String?           @default("DETECTED") @map("detection_status") @db.VarChar(20)
+  attributesJson   Json?             @map("attributes_json")
+  createdAt        DateTime          @default(now()) @map("created_at")
+
+  analysis         Analysis          @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  findings         AnalysisFinding[]
+
+  @@index([analysisId])
+  @@map("detected_objects")
+}
+
+model AnalysisFinding {
+  id               String          @id @default(uuid()) @db.Uuid
+  analysisId       String          @map("analysis_id") @db.Uuid
+  ruleId           String          @map("rule_id") @db.Uuid
+  detectedObjectId String?         @map("detected_object_id") @db.Uuid
+  verdict          Verdict
+  severity         Severity
+  rawReason        String          @map("raw_reason") @db.Text
+  createdAt        DateTime        @default(now()) @map("created_at")
+
+  analysis         Analysis        @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  rule             VastuRule       @relation(fields: [ruleId], references: [id])
+  detectedObject   DetectedObject? @relation(fields: [detectedObjectId], references: [id])
+  remedies         Remedy[]
+
+  @@index([analysisId])
+  @@map("analysis_findings")
+}
+
+model Remedy {
+  id            String          @id @default(uuid()) @db.Uuid
+  findingId     String          @map("finding_id") @db.Uuid
+  title         String          @db.VarChar(150)
+  description   String          @db.Text
+  remedyType    RemedyType      @map("remedy_type")
+  priority      Int             @default(1)
+  isAiGenerated Boolean         @default(false) @map("is_ai_generated")
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  finding       AnalysisFinding @relation(fields: [findingId], references: [id], onDelete: Cascade)
+
+  @@index([findingId])
+  @@map("remedies")
+}
+
+model AnalysisReport {
+  id                   String    @id @default(uuid()) @db.Uuid
+  analysisId           String    @unique @map("analysis_id") @db.Uuid
+  summary              String    @db.Text
+  elementalBalanceJson Json      @map("elemental_balance_json")
+  aiModelUsed          String?   @map("ai_model_used") @db.VarChar(50)
+  tokenUsageJson       Json?     @map("token_usage_json")
+  generatedAt          DateTime  @default(now()) @map("generated_at")
+
+  analysis             Analysis  @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@map("analysis_reports")
+}

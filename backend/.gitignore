@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Local storage & uploads
+uploads/
+storage/
+*.sqlite
+*.sqlite3
+*.db
+
+# Testing & Coverage
+coverage/
+*.log
+
+# OS
+.DS_Store

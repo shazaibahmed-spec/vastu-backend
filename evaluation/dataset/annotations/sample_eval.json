@@ -1,0 +1,101 @@
+{
+  "dataset_version": "1.0.0",
+  "description": "Vastu benchmark dataset annotations for spatial object detection evaluation",
+  "iou_threshold": 0.5,
+  "classes": [
+    "bed",
+    "sofa",
+    "chair",
+    "table",
+    "television",
+    "refrigerator",
+    "gas_stove",
+    "kitchen_sink",
+    "indoor_plants",
+    "desk",
+    "mirror",
+    "door",
+    "window",
+    "shoe_rack"
+  ],
+  "items": [
+    {
+      "image_id": "bedroom_001.jpg",
+      "room_type": "bedroom",
+      "expected_objects": [
+        {
+          "class_name": "bed",
+          "box": { "x": 0.15, "y": 0.25, "width": 0.55, "height": 0.45 }
+        },
+        {
+          "class_name": "indoor_plants",
+          "box": { "x": 0.80, "y": 0.40, "width": 0.12, "height": 0.25 }
+        }
+      ]
+    },
+    {
+      "image_id": "kitchen_001.jpg",
+      "room_type": "kitchen",
+      "expected_objects": [
+        {
+          "class_name": "gas_stove",
+          "box": { "x": 0.20, "y": 0.40, "width": 0.25, "height": 0.20 }
+        },
+        {
+          "class_name": "kitchen_sink",
+          "box": { "x": 0.65, "y": 0.45, "width": 0.22, "height": 0.18 }
+        },
+        {
+          "class_name": "refrigerator",
+          "box": { "x": 0.05, "y": 0.20, "width": 0.15, "height": 0.60 }
+        }
+      ]
+    },
+    {
+      "image_id": "living_001.jpg",
+      "room_type": "living_room",
+      "expected_objects": [
+        {
+          "class_name": "sofa",
+          "box": { "x": 0.20, "y": 0.50, "width": 0.45, "height": 0.35 }
+        },
+        {
+          "class_name": "television",
+          "box": { "x": 0.35, "y": 0.15, "width": 0.30, "height": 0.22 }
+        },
+        {
+          "class_name": "table",
+          "box": { "x": 0.35, "y": 0.65, "width": 0.30, "height": 0.20 }
+        }
+      ]
+    },
+    {
+      "image_id": "office_001.jpg",
+      "room_type": "office",
+      "expected_objects": [
+        {
+          "class_name": "desk",
+          "box": { "x": 0.25, "y": 0.45, "width": 0.50, "height": 0.35 }
+        },
+        {
+          "class_name": "chair",
+          "box": { "x": 0.40, "y": 0.40, "width": 0.20, "height": 0.30 }
+        }
+      ]
+    },
+    {
+      "image_id": "entrance_001.jpg",
+      "room_type": "entrance",
+      "expected_objects": [
+        {
+          "class_name": "door",
+          "box": { "x": 0.35, "y": 0.15, "width": 0.30, "height": 0.70 }
+        },
+        {
+          "class_name": "shoe_rack",
+          "box": { "x": 0.05, "y": 0.65, "width": 0.25, "height": 0.25 }
+        }
+      ]
+    }
+  ]
+}

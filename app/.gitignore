@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+
+# Expo / legacy
+.expo/
+web-build/
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro & Bundler
+.metro-health-check*
+*.jsbundle
+
+# Debug logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# Local env files
+.env
+.env*.local
+.env.*
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+
+# iOS CocoaPods & Build artifacts (managed inside ios/.gitignore)
+ios/Pods/
+ios/build/
+ios/DerivedData/
+ios/*.xcuserstate
+ios/.xcode.env.local
+
+# Android Build artifacts (managed inside android/.gitignore)
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties

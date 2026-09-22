@@ -1,0 +1,93 @@
+# ==========================================
+# Root .gitignore for VASTU AI Monorepo
+# ==========================================
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE & Editor Directories
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.sublime-project
+
+# Environment & Secrets (NEVER commit secrets or API keys)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.p12
+*.p8
+
+# Node & Package Managers
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+lerna-debug.log*
+.npm/
+
+# TypeScript & Build Caches
+*.tsbuildinfo
+dist/
+build/
+out/
+.next/
+.expo/
+web-build/
+
+# Testing & Coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# Backend Uploads & Local Media Storage
+backend/uploads/
+backend/storage/
+uploads/
+storage/
+*.sqlite
+*.sqlite3
+*.db
+
+# Mobile Native Builds & Derived Data
+# iOS
+DerivedData/
+*.xcuserstate
+project.xcworkspace
+.xcode.env.local
+Pods/
+*.ipa
+*.hmap
+
+# Android
+.gradle/
+local.properties
+*.apk
+*.aab
+*.iml
+.cxx/
+
+# Python Virtual Environments & Models
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pt
+*.onnx
+services/vision-model/venv/
+services/vision-model/models/*.pt
+services/vision-model/*.pt
+
