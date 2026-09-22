@@ -17,6 +17,7 @@ import {
   RotateCcw,
 } from 'lucide-react-native';
 import { analysisApi } from '../../api/analysis.api';
+import { getBaseUrl } from '../../api/config';
 import { PrimaryButton } from '../../components/common/PrimaryButton';
 import { useScanStore } from '../../store/scan.store';
 import { useTranslation } from '../../i18n/useTranslation';
@@ -41,7 +42,7 @@ const formatErrorMessage = (msg: any): string => {
     return 'Image resolution too low. Please upload a clear photo of at least 160x120 pixels.';
   }
   if (str.includes('Network Error') || str.includes('ECONNREFUSED')) {
-    return 'Could not connect to the backend server. Please verify your local server is running on port 3001.';
+    return `Could not connect to backend server (${getBaseUrl()}). Please check your internet connection.`;
   }
   if (str.length > 200) {
     return str.slice(0, 200) + '...';
