@@ -1,6 +1,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
@@ -11,7 +12,9 @@ import { TransformResponseInterceptor } from './common/interceptors/transform.in
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bodyParser: false,
+  });
 
   const configService = app.get(ConfigService);
   const port = configService.get<number>('app.port') || 3000;
@@ -21,9 +24,9 @@ async function bootstrap() {
     'http://localhost:3001',
   ];
 
-  // Increase JSON and URL-encoded body limit for Base64 image uploads
-  app.use(json({ limit: '20mb' }));
-  app.use(urlencoded({ extended: true, limit: '20mb' }));
+  // Increase JSON and URL-encoded body limit to 50MB for Base64 image uploads
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   // Security Headers (CSP disabled to allow Swagger UI scripts & assets)
   app.use(
