@@ -12,8 +12,9 @@ build/
 !.env.example
 
 # Local storage & uploads
-uploads/
-storage/
+/uploads/
+/storage/
+!src/modules/storage/
 *.sqlite
 *.sqlite3
 *.db

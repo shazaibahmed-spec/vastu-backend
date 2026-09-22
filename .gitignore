@@ -10,6 +10,7 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+/bin/
 
 # IDE & Editor Directories
 .idea/
@@ -54,10 +55,11 @@ coverage/
 *.lcov
 
 # Backend Uploads & Local Media Storage
-backend/uploads/
-backend/storage/
-uploads/
-storage/
+/backend/uploads/
+/backend/storage/
+/uploads/
+/storage/
+!backend/src/modules/storage/
 *.sqlite
 *.sqlite3
 *.db
